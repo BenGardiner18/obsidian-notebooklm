@@ -1,11 +1,11 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
+	"id": "obsidian-ai-podcast",
+	"name": "AI Podcast Generator",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "Convert any article or text into an AI-generated podcast conversation.",
+	"author": "Ben Gardiner",
+	"authorUrl": "https://github.com/ben-gardiner",
+	"fundingUrl": "https://github.com/sponsors/ben-gardiner",
 	"isDesktopOnly": false
 }

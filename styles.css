@@ -6,3 +6,398 @@ available in the app when your plugin is enabled.
 If your plugin does not need CSS, delete this file.
 
 */
+
+/* Base styles */
+.podcast-player-view {
+  background-color: var(--background-primary);
+  color: var(--text-normal);
+}
+
+/* Podcast generator form */
+.podcast-generator textarea {
+  background-color: var(--background-primary);
+  color: var(--text-normal);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  resize: vertical;
+}
+
+.podcast-generator textarea:focus {
+  outline: none;
+  border-color: var(--interactive-accent);
+}
+
+/* Buttons */
+.podcast-generator button {
+  background-color: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.podcast-generator button:hover:not(:disabled) {
+  background-color: var(--interactive-accent-hover);
+}
+
+.podcast-generator button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Script display */
+.script-content {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Audio player */
+.audio-player audio {
+  width: 100%;
+  border-radius: 4px;
+  background-color: var(--background-secondary);
+}
+
+/* Error message */
+.podcast-generator .error {
+  color: var(--text-error);
+  background-color: var(--background-modifier-error);
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+/* Styling for the podcast generator plugin */
+
+.podcast-generator-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.podcast-generator-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.podcast-player-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1rem;
+}
+
+/* Cursor-like editor styling */
+.cursor-editor {
+  position: relative;
+  width: 100%;
+  border-radius: 8px;
+  background-color: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  min-height: 120px;
+  margin-bottom: 1rem;
+}
+
+.cursor-editor textarea {
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+  border: none;
+  background-color: transparent;
+  padding: 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text-normal);
+}
+
+.cursor-editor textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--interactive-accent);
+}
+
+/* Editor overlay for highlighted mentions */
+.editor-overlay {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  overflow-y: auto;
+  color: var(--text-normal);
+  z-index: 1;
+}
+
+/* Highlighted @mentions in editor */
+.mention-highlight {
+  color: #4361ee;
+  font-weight: 500;
+  background-color: rgba(67, 97, 238, 0.08);
+  border-radius: 3px;
+  padding: 1px 1px;
+  box-decoration-break: clone;
+}
+
+/* Mention dropdown styling */
+.mention-dropdown {
+  position: absolute;
+  background-color: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mention-item {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.mention-item:hover {
+  background-color: var(--background-modifier-hover);
+}
+
+.mention-item.selected {
+  background-color: var(--background-modifier-hover);
+}
+
+/* Icon Sizing */
+.icon-size {
+  height: 32px;
+  width: 32px;
+}
+
+/* Generate Button Container */
+.podcast-button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+/* Status Text */
+.podcast-status-text {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Podcast Button Styling */
+.podcast-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  border-radius: 50%;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.podcast-button-default {
+  background-color: var(--interactive-accent);
+  color: white;
+}
+
+.podcast-button-default:hover {
+  background-color: var(--interactive-accent-hover);
+  transform: translateY(-4px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.podcast-button-active {
+  background-color: var(--interactive-accent-hover);
+  color: white;
+}
+
+.podcast-button-disabled {
+  background-color: var(--background-modifier-border);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+/* Animation for the spinning icon */
+.loader-spin {
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Animation for the pulsing icon */
+.loader-pulse {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* Microphone button styling */
+.mic-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: var(--interactive-accent);
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin: 0 auto;
+  transition: all 0.2s ease;
+}
+
+.mic-button:hover {
+  transform: scale(1.05);
+  background-color: var(--interactive-accent-hover);
+}
+
+.mic-button:active {
+  transform: scale(0.95);
+}
+
+.mic-button.generating {
+  animation: pulse 1.5s infinite;
+}
+
+/* Audio player styling */
+.audio-container {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.audio-player {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+/* File attachment styling */
+.attachment-chip {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--background-modifier-hover);
+  border-radius: 4px;
+  padding: 2px 8px;
+  margin: 2px;
+  font-size: 0.85rem;
+}
+
+.attachment-chip-icon {
+  margin-right: 4px;
+}
+
+.attachment-chip-close {
+  margin-left: 4px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.attachment-chip-close:hover {
+  opacity: 1;
+}
+
+/* File suggestions */
+.file-suggestions {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--background-modifier-border);
+}
+
+.suggestion {
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.suggestion:last-child {
+  border-bottom: none;
+}
+
+/* Warning message styling */
+.warning-message {
+  background-color: var(--background-modifier-error);
+  border: 1px solid var(--text-error);
+  color: var(--text-error);
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1.5rem;
+}
+
+.warning-title {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+/* Info message styling */
+.info-message {
+  background-color: var(--background-modifier-cover);
+  border: 1px solid var(--text-accent);
+  color: var(--text-accent);
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.info-title {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+/* Header styling */
+.podcast-header {
+  margin-bottom: 1.5rem;
+}
+
+.podcast-header h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+/* Mention badges container */
+.mentioned-files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Individual mention badge */
+.mention-badge {
+  display: flex;
+  align-items: center;
+  background-color: var(--background-modifier-hover);
+  color: var(--text-accent);
+  font-size: 0.75rem;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.mention-badge:hover {
+  background-color: var(--background-modifier-border);
+}
+
+/* Mention text */
+.mention-text {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Remove icon */
+.mention-remove-icon {
+  height: 12px;
+  width: 12px;
+  margin-left: 0.25rem;
+  color: var(--text-muted);
+}
