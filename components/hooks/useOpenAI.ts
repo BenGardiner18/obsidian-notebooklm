@@ -3,6 +3,12 @@ import OpenAI from 'openai';
 import { initializeOpenAI, generatePodcastScript, generatePodcastAudio } from '../apiConfig';
 import { Mention } from '../types';
 
+// Define interface for dialog entry
+interface DialogEntry {
+  speaker: string;
+  text: string;
+}
+
 interface UseOpenAIProps {
   apiKey: string;
   durationMinutes: number;
@@ -11,6 +17,7 @@ interface UseOpenAIProps {
 interface UseOpenAIReturn {
   openaiInstance: OpenAI | null;
   audioUrl: string;
+  dialogData: DialogEntry[];
   isGenerating: boolean;
   isGeneratingAudio: boolean;
   showAudio: boolean;
@@ -26,6 +33,7 @@ export const useOpenAI = ({
 }: UseOpenAIProps): UseOpenAIReturn => {
   const [openaiInstance, setOpenaiInstance] = useState<OpenAI | null>(null);
   const [audioUrl, setAudioUrl] = useState('');
+  const [dialogData, setDialogData] = useState<DialogEntry[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
   const [showAudio, setShowAudio] = useState(false);
@@ -66,6 +74,10 @@ export const useOpenAI = ({
     setError('');
     setIsGenerating(true);
     setShowAudio(false);
+    setAudioUrl('');
+    setDialogData([]);
+    
+    let scriptJson = '';
     
     try {
       // Combine mentions content
@@ -80,7 +92,8 @@ export const useOpenAI = ({
       }
       
       // Generate script
-      const script = await generatePodcastScript(
+      console.log("Generating podcast script...");
+      scriptJson = await generatePodcastScript(
         openaiInstance,
         combinedContent,
         host1Name,
@@ -88,22 +101,76 @@ export const useOpenAI = ({
         durationMinutes
       );
       
-      // Log the script instead of displaying it
-      console.log('Generated Podcast Script:');
-      console.log(script);
+      // Parse the JSON dialog
+      try {
+        const parsedDialog = JSON.parse(scriptJson) as DialogEntry[];
+        
+        if (parsedDialog && Array.isArray(parsedDialog) && parsedDialog.length > 0) {
+          setDialogData(parsedDialog);
+          console.log(`Successfully loaded ${parsedDialog.length} dialog entries`);
+        } else {
+          console.warn('Dialog parsed but appears invalid:', parsedDialog);
+        }
+      } catch (parseErr) {
+        console.error('Error parsing dialog JSON:', parseErr);
+        // Don't set an error yet - continue with audio generation as we may still have valid content
+      }
       
       setIsGenerating(false);
       setIsGeneratingAudio(true);
       
-      // Generate audio
-      const url = await generatePodcastAudio(openaiInstance, script);
-      setAudioUrl(url);
-      setIsGeneratingAudio(false);
-      setShowAudio(true);
-      
+      // Generate audio with robust error handling
+      try {
+        console.log("Generating podcast audio...");
+        const url = await generatePodcastAudio(openaiInstance, scriptJson);
+        setAudioUrl(url);
+        setIsGeneratingAudio(false);
+        setShowAudio(true);
+      } catch (audioErr: any) {
+        console.error('Error generating audio:', audioErr);
+        setError(`Audio generation failed: ${audioErr.message || 'Unknown error'}`);
+        setIsGeneratingAudio(false);
+        
+        // Try fallback audio generation if needed
+        if (scriptJson) {
+          console.log("Attempting fallback audio generation...");
+          try {
+            // Try parsing as JSON one more time in case it's valid but not in our expected format
+            let textToConvert = scriptJson;
+            try {
+              const parsedJson = JSON.parse(scriptJson);
+              if (typeof parsedJson === 'object' && !Array.isArray(parsedJson)) {
+                // If it's a single object, extract its text content
+                textToConvert = Object.values(parsedJson)
+                  .filter(val => typeof val === 'string')
+                  .join('\n');
+              }
+            } catch (e) {
+              // If parsing fails, use the script text directly
+            }
+            
+            // Limit the text length for the API
+            const limitedText = textToConvert.substring(0, 4000);
+            
+            const fallbackResponse = await openaiInstance.audio.speech.create({
+              model: "tts-1",
+              voice: "alloy", // Neutral fallback voice
+              input: limitedText,
+            });
+            
+            const audioBlob = await fallbackResponse.blob();
+            const fallbackUrl = URL.createObjectURL(audioBlob);
+            setAudioUrl(fallbackUrl);
+            setShowAudio(true);
+            setError("Used fallback audio generation with a single voice");
+          } catch (fallbackErr) {
+            console.error("Fallback audio generation also failed:", fallbackErr);
+          }
+        }
+      }
     } catch (err: any) {
       console.error('Error generating podcast:', err);
-      setError(err.message || 'Failed to generate podcast');
+      setError(`Podcast generation failed: ${err.message || 'Unknown error'}`);
       setIsGenerating(false);
       setIsGeneratingAudio(false);
     }
@@ -112,6 +179,7 @@ export const useOpenAI = ({
   return {
     openaiInstance,
     audioUrl,
+    dialogData,
     isGenerating,
     isGeneratingAudio,
     showAudio,
